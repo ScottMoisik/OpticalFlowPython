@@ -1,3 +1,6 @@
-INFO:root:Run started at 2020-03-03 16:47:13.259236
+INFO:root:Run started at 2020-07-01 18:34:54.298025
 INFO:of.ofreg:PD: data\P1_01 test. item processed.
-INFO:root:Elapsed time 136.11498022079468
+INFO:dipy.align.imwarp:Creating scale space from the moving image. Levels: 2. Sigma factor: 0.200000.
+INFO:dipy.align.imwarp:Creating scale space from the static image. Levels: 2. Sigma factor: 0.200000.
+INFO:dipy.align.imwarp:Optimizing level 1
+INFO:dipy.align.imwarp:Optimizing level 0

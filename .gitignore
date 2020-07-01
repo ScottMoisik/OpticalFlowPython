@@ -1,6 +1,7 @@
 venv/
 .idea/
 *.log
+*.png
 .DS_Store
 of/__pycache__
 results/

@@ -93,7 +93,7 @@ def main():
     data_list = of.get_data_from_dir(directory)
 
     # run OF on each item
-    data = [of.compute(item) for item in data_list]
+    data = of.compute(data_list)
 
 
 if __name__ == '__main__':
