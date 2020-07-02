@@ -183,33 +183,35 @@ def get_data_from_dir(directory):
     return meta
 
 
-def parallel_register(ns, index, num_frames, storage):
+#def parallel_register(ns, index, num_frames, storage):
+def parallel_register(im1, im2, index, num_frames, storage):
     sys.stdout.write("Working on frame pair %d of %d\n" % (index, num_frames - 1))
-    current_im = ns.ultra_interp[index]
-    next_im = ns.ultra_interp[index + 1]
+    #current_im = ns.ultra_interp[index]
+    #next_im = ns.ultra_interp[index + 1]
 
     # suppress warnings (from dipy package encouraging us to install "Fury")
-    warnings.filterwarnings("ignore")
+    #warnings.filterwarnings("ignore")
 
     # execute and store the optimization
-    storage[index] = {'of': pirt_reg(current_im, next_im), 'current frame': index, 'next frame': index + 1}
-
+    #storage[index] = {'of': pirt_reg(current_im, next_im), 'current frame': index, 'next frame': index + 1}
+    storage[index] = {'of': pirt_reg(im1, im2), 'current frame': index, 'next frame': index + 1}
     # revert back to always displaying warnings
-    warnings.filterwarnings("always")
+    #warnings.filterwarnings("always")
 
 
 def pirt_reg(im1, im2):
     # Init registration
     reg = pirt.OriginalDemonsRegistration(im1, im2)
-    reg.params.scale_levels = 2
-    reg.params.speed_factor = 3.0
-    reg.params.noise_factor = 0.5
+    reg.params.scale_levels = 2 #Good: 2
+    reg.params.speed_factor = 3.0 #Good: 3.0
+    reg.params.noise_factor = 0.5 #Good: 0.5
     reg.params.mapping = 'forward'
-    reg.params.scale_sampling = 5
-    reg.params.final_grid_sampling = 2
+    reg.params.scale_sampling = 5 #Good: 5
+    reg.params.final_grid_sampling = 2 #Good: 2
 
     # Register (non-verbose)
     reg.register(0)
+
     return reg.get_deform(0)._fields
 
 
@@ -250,19 +252,22 @@ def compute(data_list):
                 ultra_interp.append(f(xnew, ynew))
 
             # DO REGISTRATION (CHECK FOR PARALLELISM)
-            useParallelFlag = True
+            # TODO: Get parallelism working with the PIRT routine (cause paging file error on my machine)
+            useParallelFlag = False
             if useParallelFlag:
                 # setup parallelism for running the registration
                 mgr = Manager()
+
                 storage = mgr.dict()  # create the storage for the optical flow
-                ns = mgr.Namespace()
-                ns.ultra_interp = ultra_interp
+                #ns = mgr.Namespace()
+                #ns.ultra_interp = ultra_interp
 
                 procs = []
 
                 # run the parallel processes
                 for fIdx in range(0, ult_no_frames-1):
-                    proc = Process(target=parallel_register, args=(ns, fIdx, ult_no_frames, storage))
+                    #proc = Process(target=parallel_register, args=(ns, fIdx, ult_no_frames, storage))
+                    proc = Process(target=parallel_register, args=(ultra_interp[fIdx], ultra_interp[fIdx + 1], fIdx, ult_no_frames, storage))
                     procs.append(proc)
                     proc.start()
 
