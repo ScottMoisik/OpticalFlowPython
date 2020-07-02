@@ -29,6 +29,9 @@
 # see <https://creativecommons.org/licenses/by-nc-sa/4.0/> for details.
 #
 
+
+# TODO : List of non-rigid registration algorithms http://pyimreg.github.io/
+
 from contextlib import closing
 from datetime import datetime
 
@@ -45,19 +48,24 @@ import struct
 import sys
 import time
 import warnings
+import wave
 
 from multiprocessing import Process, Manager
+
+# demons algorithim implemented in the PIRT package with visualization support
+import pirt
+import visvis as vv
 
 # diffeomorphic demons algorithm implemented in python in the DIPY package
 from dipy.align.imwarp import SymmetricDiffeomorphicRegistration
 from dipy.align.metrics import SSDMetric, CCMetric, EMMetric
-from dipy.viz import regtools
+# from dipy.viz import regtools
 
 # numpy and scipy
 import numpy as np
 import scipy.io as sio
 import scipy.io.wavfile as sio_wavfile
-from scipy.signal import butter, filtfilt, kaiser, sosfilt
+# from scipy.signal import butter, filtfilt, kaiser, sosfilt
 
 from scipy import interpolate
 
@@ -183,11 +191,26 @@ def parallel_register(ns, index, num_frames, storage):
     # suppress warnings (from dipy package encouraging us to install "Fury")
     warnings.filterwarnings("ignore")
 
-    # execute the optimization
-    storage[index] = {'of': ns.sdr.optimize(next_im, current_im), 'current frame': index, 'next frame': index + 1}
+    # execute and store the optimization
+    storage[index] = {'of': pirt_reg(current_im, next_im), 'current frame': index, 'next frame': index + 1}
 
     # revert back to always displaying warnings
     warnings.filterwarnings("always")
+
+
+def pirt_reg(im1, im2):
+    # Init registration
+    reg = pirt.OriginalDemonsRegistration(im1, im2)
+    reg.params.scale_levels = 2
+    reg.params.speed_factor = 3.0
+    reg.params.noise_factor = 0.5
+    reg.params.mapping = 'forward'
+    reg.params.scale_sampling = 5
+    reg.params.final_grid_sampling = 2
+
+    # Register (non-verbose)
+    reg.register(0)
+    return reg.get_deform(0)._fields
 
 
 def compute(data_list):
@@ -220,100 +243,20 @@ def compute(data_list):
 
             xnew = np.linspace(1, ult_NumVectors, ult_NumVectors)
             ynew = np.linspace(1, ult_PixPerVector, math.ceil(ult_NumVectors * length_depth_ratio))
-            f = interpolate.interp2d(x, y, np.transpose(ultra[1, :, :]), kind='linear')
 
             ultra_interp = []
-
-            # debug plotting
-            debug_plot_interpolation = False
-            if debug_plot_interpolation:
-                fig, ax = plt.subplots(1, 1)
-                im = ax.imshow(f(xnew, ynew))
-
             for fIdx in range(0, ult_no_frames):
                 f = interpolate.interp2d(x, y, np.transpose(ultra[fIdx, :, :]), kind='linear')
                 ultra_interp.append(f(xnew, ynew))
 
-                # debug plotting
-                if debug_plot_interpolation:
-                    im.set_data(ultra_interp[fIdx])
-                    ax.set_title(str(fIdx))
-                    fig.canvas.draw_idle()
-                    plt.pause(0.01)
-
-            # perform registration using diffeomorphic demons algorithm (from DIPY package)
-            # https://dipy.org/documentation/1.1.1./examples_built/syn_registration_2d/#example-syn-registration-2d
-
-            # specify the number of iterations in each of the levels in the multiresolution pyramid
-            level_iters = [100, 50, 25]
-            level_iters = [10, 5]
-            metric = SSDMetric(2, smooth=2, inner_iter=10)
-
-            # create a registration metric
-            sigma_diff = 1.0 #3.0
-            radius = 3
-            metric = CCMetric(2, sigma_diff, radius)
-
-            # create the registration object
-            # TODO it may not be necessary to get the inverse displacement field... setting inv_iter to 0 in an attempt to speed up computation
-            sdr = SymmetricDiffeomorphicRegistration(metric, level_iters, inv_iter=0)
-
-            skipDebugAreaFlag = True
-            if skipDebugAreaFlag:
-                #TODO Debugging area
-                fIdx = 134
-                current_im = ultra_interp[fIdx]
-                next_im = ultra_interp[fIdx + 1]
-                current_imHR = ultra[fIdx, :, :]
-                next_imHR = ultra[fIdx + 1, :, :]
-
-                # execute the optimization
-                level_iters = [10, 5]
-                #metric = SSDMetric(2, smooth=2, inner_iter=10)#CCMetric(2, 1.5, 1)
-
-                sdr = SymmetricDiffeomorphicRegistration(metric, level_iters, inv_iter=0)
-
-                mapping = sdr.optimize(next_im, current_im)
-                regtools.overlay_images(next_im, current_im, 'Next', 'Overlay', 'Current', 'testOverlay.png')
-                regtools.plot_2d_diffeomorphic_map(mapping, 5, 'testMaps.png')
-
-                #mappingHR = sdr.optimize(next_imHR, current_imHR)
-                #regtools.overlay_images(next_imHR, current_imHR, 'Current', 'Overlay', 'Next', 'testOverlayHR.png')
-                #regtools.plot_2d_diffeomorphic_map(mappingHR, 5, 'testMapsHR.png')
-
-                skipIncrement = 5
-                xx, yy = np.meshgrid(range(1, ultra_interp[fIdx].shape[0]),
-                                               range(1, ultra_interp[fIdx].shape[1]))
-                xIndices, yIndices = np.meshgrid(np.arange(0, xx.shape[0], skipIncrement),
-                                                           np.arange(0, xx.shape[1], skipIncrement))
-
-                # TODO set the default figure size to be some sensible proportion of the screen real estate
-                fig = plt.figure(figsize=(10, 8))
-                ax = fig.add_axes([0.1, 0.6, 0.4, 0.4])
-                im = ax.imshow(ultra_interp[0])
-                quiver = plt.quiver(yy[xIndices, yIndices],
-                                         xx[xIndices, yIndices],
-                                         mapping.forward[yIndices, xIndices, 0],
-                                         mapping.forward[yIndices, xIndices, 1],
-                                         scale_units='xy', scale=0.2, color='r', angles='xy')
-                plt.show(block=False)
-
-
-
-            # iterate through the frame pairs and perform the registration each
-            #ult_no_frames = 25 # just for debugging purposes
-            debug_plot_ofreg = False
-
             # DO REGISTRATION (CHECK FOR PARALLELISM)
-            ofoutput = []
-            useParallelFlag = False
+            useParallelFlag = True
             if useParallelFlag:
                 # setup parallelism for running the registration
                 mgr = Manager()
                 storage = mgr.dict()  # create the storage for the optical flow
                 ns = mgr.Namespace()
                 ns.ultra_interp = ultra_interp
-                ns.sdr = sdr
 
                 procs = []
 
@@ -337,64 +280,26 @@ def compute(data_list):
                     current_im = ultra_interp[fIdx]
                     next_im = ultra_interp[fIdx + 1]
 
-                    # execute the optimization
-                    ofdisp.append({'of': sdr.optimize(next_im, current_im), 'current frame': fIdx, 'next frame': fIdx + 1})
-
-                    # debug plotting
-                    if debug_plot_ofreg:
-                        fig, ax = plt.subplots(1, 2)
-                        ax[0].imshow(current_im)
-                        ax[1].imshow(next_im)
-                        plt.show()
-                        plt.pause(0.05)
+                    # execute and store the optimization
+                    ofdisp.append({'of': pirt_reg(current_im, next_im), 'current frame': fIdx, 'next frame': fIdx + 1})
 
             print("Finished computing optical flow for %s" % (item['filebase']))
-
-
-            # debug plotting
-            debug_plot_quiver = True
-            if debug_plot_quiver:
-                # visualize registration as quiver plot
-                xx, yy = np.meshgrid(range(1, ultra_interp[0].shape[0]), range(1, ultra_interp[0].shape[1]))
-
-                fig, ax = plt.subplots(1, 1)
-                im = ax.imshow(ultra_interp[0])
-                quiver = plt.quiver(yy, xx, ofdisp[1]['of'].forward[:, :, 0], ofdisp[1]['of'].forward[:, :, 1], color = 'r')
-                debug_frame = 1
-
-                # create mousewheel callback function for updating the plot to a new frame
-                def update_plot(event):
-                    nonlocal debug_frame
-                    # detect the mouse wheel action
-                    if event.button == 'up':
-                        debug_frame = min(debug_frame + 1, ult_no_frames - 2)
-                    elif event.button == 'down':
-                        debug_frame = max(debug_frame - 1, 1)
-                    else:
-                        print("oops")
-
-                    # update the plot
-                    im.set_data(ultra_interp[debug_frame])
-                    quiver.set_UVC(ofdisp[debug_frame]['of'].forward[:, :, 0], ofdisp[debug_frame]['of'].forward[:, :, 1])
-                    ax.set_title(str(debug_frame))
-                    fig.canvas.draw_idle()
-
-                # register the callback function with the figure
-                cid = fig.canvas.mpl_connect('scroll_event', update_plot)
-
-            #plt.show()
 
             # compute the ultrasound time vector
             ultra_time = np.linspace(0, ult_no_frames, ult_no_frames, endpoint=False) / ult_fps
             ultra_time = ultra_time + ult_TimeInSecOfFirstFrame + .5 / ult_fps
 
+            # Compute the audio time vector
             ult_wav_time = np.linspace(0, len(ult_wav_frames), len(ult_wav_frames), endpoint=False) / ult_wav_fs
 
+            # Store the data
             data = {}
             data['ofdisp'] = ofdisp
             data['ultra_interp'] = ultra_interp
             data['ult_time'] = ultra_time
             data['wav_time'] = ult_wav_time
+            data['wav_data'] = ult_wav_frames
+            data['wav_fs'] = ult_wav_fs
             data['ult_no_frames'] = ult_no_frames
             data['probe_array_length_mm'] = probe_array_length_mm
             data['probe_depth_mm'] = probe_depth_mm

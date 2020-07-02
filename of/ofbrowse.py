@@ -82,8 +82,8 @@ class GUI:
         self.im = self.ax.imshow(self.ultra_interp[0])
         self.quiver = plt.quiver(self.yy[self.xIndices, self.yIndices],
                                  self.xx[self.xIndices, self.yIndices],
-                                 self.ofdisp[0]['of'].forward[self.yIndices, self.xIndices, 0],
-                                 self.ofdisp[0]['of'].forward[self.yIndices, self.xIndices, 1],
+                                 self.ofdisp[0]['of'][1][self.yIndices, self.xIndices],
+                                 self.ofdisp[0]['of'][0][self.yIndices, self.xIndices],
                                  scale_units='xy', scale=1.0, color='r', angles='xy')
 
         # compute the velocity and position using the trimmed mean approach
@@ -172,8 +172,11 @@ class GUI:
         """ update the gui by changing the state according to the current frame """
         # update the plots
         self.im.set_data(self.ultra_interp[self.frame_index])
-        self.quiver.set_UVC(self.ofdisp[self.frame_index]['of'].forward[self.yIndices, self.xIndices, 0],
-                            self.ofdisp[self.frame_index]['of'].forward[self.yIndices, self.xIndices, 1])
+        self.quiver.set_UVC(self.ofdisp[self.frame_index]['of'][1][self.yIndices, self.xIndices],
+                            self.ofdisp[self.frame_index]['of'][0][self.yIndices, self.xIndices])
+
+        #self.ofdisp[self.frame_index]['of'].forward[self.yIndices, self.xIndices, 0],
+        #self.ofdisp[self.frame_index]['of'].forward[self.yIndices, self.xIndices, 1])
 
 
         # TODO: Update compass more quickly... probably recreating the annotation each time is the slow part
@@ -200,8 +203,8 @@ class GUI:
         # TODO this is working differently from the Matlab implementation (may need padding of the signals, e.g., following integration)
         # obtain the consensus velocity vector for each frame(pair)
         for fIdx in range(0, self.ult_no_frames - 1):
-            disp_comp_h = self.ofdisp[fIdx]['of'].forward[:, :, 0]
-            disp_comp_v = self.ofdisp[fIdx]['of'].forward[:, :, 1]
+            disp_comp_h = self.ofdisp[fIdx]['of'][1][self.yIndices, self.xIndices] #self.ofdisp[fIdx]['of'].forward[:, :, 0]
+            disp_comp_v = self.ofdisp[fIdx]['of'][0][self.yIndices, self.xIndices] #self.ofdisp[fIdx]['of'].forward[:, :, 1]
 
             self.vel[fIdx, 0] = trim_mean(disp_comp_h.flatten(), 0.25) / self.ult_period * self.scaling
             self.vel[fIdx, 1] = trim_mean(disp_comp_v.flatten(), 0.25) / self.ult_period * self.scaling

@@ -1,0 +1,230 @@
+
+def pirt_reg(im1, im2):
+    # TODO Debugging area
+    #cIdx = 104
+    #nIdx = 105
+    #im1 = ultra_interp[cIdx]
+    #im2 = ultra_interp[nIdx]
+
+    # Get figure
+    # vv.closeAll()
+    # fig = vv.figure(1);
+    # vv.clf()
+    # fig.position = 200, 100, 900, 500
+
+    # Init registration
+    # reg = pirt.GravityRegistration(im1, im2)
+    reg = pirt.OriginalDemonsRegistration(im1, im2)
+    # reg = pirt.DiffeomorphicDemonsRegistration(im1, im2)
+
+    # os.environ['ELASTIX_PATH'] = ".\\lib\\elastix"
+    # img1Contig = np.ascontiguousarray(im1)
+    # img2Contig = np.ascontiguousarray(im2)
+    # reg = pirt.ElastixRegistration(img1Contig, img2Contig)
+
+    if isinstance(reg, pirt.OriginalDemonsRegistration):
+        reg.params.scale_levels = 2
+        reg.params.speed_factor = 3.0
+        reg.params.noise_factor = 0.5
+        reg.params.mapping = 'forward'
+        reg.params.scale_sampling = 5
+        reg.params.final_grid_sampling = 2
+    if isinstance(reg, pirt.DiffeomorphicDemonsRegistration):
+        reg.params.speed_factor = 5
+        reg.params.noise_factor = 10.5
+        reg.params.mapping = 'backward'
+        reg.params.scale_sampling = 32
+        reg.params.final_grid_sampling = 16
+    if isinstance(reg, pirt.GravityRegistration):
+        reg.params.scale_levels = 30
+        reg.params.scale_sampling = 15
+        reg.params.mapping = 'forward'
+        reg.params.deform_wise = 'groupwise'
+        reg.params.deform_limit = 0.02
+        reg.params.final_scale = 2.0
+        reg.params.final_grid_sampling = 10
+        reg.params.grid_sampling_factor = 0.25  # !! important especially for Laplace !!
+        reg.params.frozenedge = True
+        reg.params.mass_transforms = 2
+        reg.params.speed_factor = 12.0
+    if isinstance(reg, pirt.ElastixRegistration):
+        reg.params.NumberOfResolutions = 5
+        reg.params.MaximumNumberOfIterations = 150
+        reg.params.FinalGridSpacingInPhysicalUnits = 20
+        reg.params.NumberOfSpatialSamples = 2 ** 11
+
+    # Register, pass the figure so that the algorithm can show progress
+    reg.register(0)
+    # reg.register(1, fig)
+
+    visualizeResultsFlag = False
+    if visualizeResultsFlag:
+        # Visualize end results
+        vv.figure(2)
+        vv.clf()
+        reg.show_result('diff', vv.figure(2))
+
+        skipIncrement = 2
+        xx, yy = np.meshgrid(range(1, im1.shape[0]),
+                             range(1, im1.shape[1]))
+        xIndices, yIndices = np.meshgrid(np.arange(0, xx.shape[0], skipIncrement),
+                                         np.arange(0, xx.shape[1], skipIncrement))
+        reg.get_deform(0)
+        mapping = []
+        fig = plt.figure(figsize=(10, 8))
+        ax = fig.add_axes([0.1, 0.1, 0.8, 0.8])
+        im = ax.imshow(im1)
+        quiver = plt.quiver(yy[xIndices, yIndices],
+                            xx[xIndices, yIndices],
+                            reg.get_deform(0)._fields[0][yIndices, xIndices],
+                            reg.get_deform(0)._fields[1][yIndices, xIndices],
+                            scale_units='xy', scale=0.5, color='r', angles='xy')
+        plt.show(block=False)
+        t = 1
+
+    return reg.get_deform(0)._fields
+
+
+
+
+            # debug plotting
+            debug_plot_interpolation = False
+            if debug_plot_interpolation:
+                fig, ax = plt.subplots(1, 1)
+                im = ax.imshow(f(xnew, ynew))
+
+            for fIdx in range(0, ult_no_frames):
+                f = interpolate.interp2d(x, y, np.transpose(ultra[fIdx, :, :]), kind='linear')
+                ultra_interp.append(f(xnew, ynew))
+
+                # debug plotting
+                if debug_plot_interpolation:
+                    im.set_data(ultra_interp[fIdx])
+                    ax.set_title(str(fIdx))
+                    fig.canvas.draw_idle()
+                    plt.pause(0.01)
+
+
+
+
+
+            # perform registration using diffeomorphic demons algorithm (from DIPY package)
+            # https://dipy.org/documentation/1.1.1./examples_built/syn_registration_2d/#example-syn-registration-2d
+
+            # specify the number of iterations in each of the levels in the multiresolution pyramid
+            level_iters = [100, 50, 25]
+            #level_iters = [10, 5]
+            metric = SSDMetric(2, smooth=2, inner_iter=10)
+
+            # create a registration metric
+            #sigma_diff = 1.0 #3.0
+            #radius = 3
+            #metric = CCMetric(2, sigma_diff, radius)
+
+            # create the registration object
+            # TODO it may not be necessary to get the inverse displacement field... setting inv_iter to 0 in an attempt to speed up computation
+            #sdr = SymmetricDiffeomorphicRegistration(metric, level_iters, inv_iter=0)
+
+            doDebugAreaFlag = False
+            if doDebugAreaFlag:
+
+
+                #TODO Debugging area
+                cIdx = 102
+                nIdx = 103
+                current_im = ultra_interp[cIdx]
+                next_im = ultra_interp[nIdx]
+                #current_imHR = ultra[fIdx, :, :]
+                #next_imHR = ultra[fIdx + 1, :, :]
+
+                # pirt_reg(ultra_interp) #current_im, next_im)
+
+                # execute the optimization
+                level_iters = [10, 5]
+                #metric = SSDMetric(2, smooth=2, inner_iter=10)#CCMetric(2, 1.5, 1)
+
+                sdr = SymmetricDiffeomorphicRegistration(metric, level_iters, inv_iter=0)
+
+                mapping = sdr.optimize(next_im, current_im)
+                #regtools.overlay_images(next_im, current_im, 'Next', 'Overlay', 'Current', 'testOverlay.png')
+                #regtools.plot_2d_diffeomorphic_map(mapping, 5, 'testMaps.png')
+
+                #mappingHR = sdr.optimize(next_imHR, current_imHR)
+                #regtools.overlay_images(next_imHR, current_imHR, 'Current', 'Overlay', 'Next', 'testOverlayHR.png')
+                #regtools.plot_2d_diffeomorphic_map(mappingHR, 5, 'testMapsHR.png')
+
+
+
+
+            # iterate through the frame pairs and perform the registration each
+            #ult_no_frames = 25 # just for debugging purposes
+            debug_plot_ofreg = False
+
+
+
+
+                    # ofdisp.append({'of': sdr.optimize(next_im, current_im), 'current frame': fIdx, 'next frame': fIdx + 1})
+
+                    # debug plotting
+                    if debug_plot_ofreg:
+                        fig, ax = plt.subplots(1, 2)
+                        ax[0].imshow(current_im)
+                        ax[1].imshow(next_im)
+                        plt.show()
+                        plt.pause(0.05)
+
+
+
+
+
+
+
+
+     #storage[index] = {'of': ns.sdr.optimize(next_im, current_im), 'current frame': index, 'next frame': index + 1}
+
+
+
+
+            # debug plotting
+            debug_plot_quiver = False
+            if debug_plot_quiver:
+                # visualize registration as quiver plot
+                xx, yy = np.meshgrid(range(1, ultra_interp[0].shape[0]), range(1, ultra_interp[0].shape[1]))
+
+                fig, ax = plt.subplots(1, 1)
+                im = ax.imshow(ultra_interp[0])
+                quiver = plt.quiver(yy, xx, ofdisp[1]['of'].forward[:, :, 0], ofdisp[1]['of'].forward[:, :, 1], color = 'r')
+                debug_frame = 1
+
+                # create mousewheel callback function for updating the plot to a new frame
+                def update_plot(event):
+                    nonlocal debug_frame
+                    # detect the mouse wheel action
+                    if event.button == 'up':
+                        debug_frame = min(debug_frame + 1, ult_no_frames - 2)
+                    elif event.button == 'down':
+                        debug_frame = max(debug_frame - 1, 1)
+                    else:
+                        print("oops")
+
+                    # update the plot
+                    im.set_data(ultra_interp[debug_frame])
+                    quiver.set_UVC(ofdisp[debug_frame]['of'].forward[:, :, 0], ofdisp[debug_frame]['of'].forward[:, :, 1])
+                    ax.set_title(str(debug_frame))
+                    fig.canvas.draw_idle()
+
+                # register the callback function with the figure
+                cid = fig.canvas.mpl_connect('scroll_event', update_plot)
+
+            #plt.show()
+
+
+
+
+
+            x = np.linspace(1, ult_NumVectors, ult_NumVectors)
+            y = np.linspace(1, ult_PixPerVector, ult_PixPerVector)
+
+            xnew = np.linspace(1, ult_NumVectors, ult_NumVectors)
+            ynew = np.linspace(1, ult_PixPerVector, math.ceil(ult_NumVectors * length_depth_ratio))
+            f = interpolate.interp2d(x, y, np.transpose(ultra[1, :, :]), kind='linear')
