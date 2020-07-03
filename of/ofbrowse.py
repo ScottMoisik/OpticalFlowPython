@@ -40,6 +40,8 @@ import numpy as np
 
 # scientific plotting
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+from matplotlib.colors import Normalize
 import scipy
 from scipy import integrate
 from scipy.stats import trim_mean
@@ -67,6 +69,7 @@ class GUI:
         # Visualization options
         self.flow_dir = FlowDir.Horizontal
         self.flow_polarity = 1
+        self.flow_half_field = 0
         self.flow_dir_label = 'Horizontal in Video'
         self.flow_pol_label = ''
         self.skip_increment = 7
@@ -83,25 +86,38 @@ class GUI:
         # visualize registration as quiver plot
         self.xx, self.yy = np.meshgrid(range(1, self.ultra_interp[0].shape[0]),
                                        range(1, self.ultra_interp[0].shape[1]))
-        self.x_indices, self.y_indices = np.meshgrid(np.arange(0, self.xx.shape[0], self.skip_increment),
-                                                   np.arange(0, self.xx.shape[1], self.skip_increment))
+
+        self.x_indices_full, self.y_indices_full = np.meshgrid(np.arange(0, self.xx.shape[0]),
+                                                               np.arange(0, self.xx.shape[1]))
+        self.x_indices_half, self.y_indices_half = np.meshgrid(np.arange(0, int(self.xx.shape[0]/2)),
+                                                               np.arange(0, self.xx.shape[1]))
+        self.x_indices_plot, self.y_indices_plot = np.meshgrid(np.arange(0, self.xx.shape[0], self.skip_increment),
+                                                              np.arange(0, self.xx.shape[1], self.skip_increment))
+
+
+        self.quiver_colors = np.empty(shape=np.shape(self.x_indices_plot))
+        self.quiver_colors.fill(1)
+        # TODO: A lazy hack to force the quiver colormapping to work (it autoscales to the values)
+        self.quiver_colors[0, 0] = 0
+        self.quiver_plot_halfsize = math.ceil(self.x_indices_plot.shape[0]/2) * self.x_indices_plot.shape[1]
+        self.x_indices = self.x_indices_full
+        self.y_indices = self.y_indices_full
 
         #TODO set the default figure size to be some sensible proportion of the screen real estate
         self.fig = plt.figure(figsize=(10, 8))
         self.ax_quiver = self.fig.add_axes([0.1, 0.6, 0.4, 0.4])
         plt.sca(self.ax_quiver)
         self.im = self.ax_quiver.imshow(self.ultra_interp[0])
-        self.quiver = plt.quiver(self.yy[self.x_indices, self.y_indices],
-                                 self.xx[self.x_indices, self.y_indices],
-                                 self.ofdisp[0]['of'][1][self.y_indices, self.x_indices],
-                                 self.ofdisp[0]['of'][0][self.y_indices, self.x_indices],
-                                 scale_units='xy', scale=0.5, color='r', angles='xy')
-
+        self.quiver = plt.quiver(self.yy[self.x_indices_plot, self.y_indices_plot],
+                                 self.xx[self.x_indices_plot, self.y_indices_plot],
+                                 self.ofdisp[0]['of'][1][self.y_indices_plot, self.x_indices_plot],
+                                 self.ofdisp[0]['of'][0][self.y_indices_plot, self.x_indices_plot],
+                                 self.quiver_colors,
+                                 cmap=cm.bwr, scale_units='xy', scale=0.5, angles='xy')
 
         # compute the velocity and position using the trimmed mean approach
         self.vel = np.empty((self.ult_no_frames - 1, 2))
         self.pos = np.empty((self.ult_no_frames - 2, 2))
-        self.compute_kinematics()
 
         # Add a compass plot to visualize the consensus vector
         angles, radii = cart2pol(self.vel[:, 0], self.vel[:, 1])
@@ -147,14 +163,31 @@ class GUI:
         self.cid_scroll = self.fig.canvas.mpl_connect('scroll_event', self.mouse_scroll)
         self.fig.canvas.mpl_connect('key_press_event', self.key_press)
 
+
+        #self.redraw_velpos_no_markers()
+        #self.line_vel.set_ydata(self.flow_polarity * self.vel[:, self.flow_dir.value])
+        #self.line_pos.set_ydata(self.flow_polarity * self.pos[:, self.flow_dir.value])
+        #self.fig.canvas.draw()
+        #self.ax_vel_bg = self.fig.canvas.copy_from_bbox(self.ax_vel.bbox)
+        #self.ax_pos_bg = self.fig.canvas.copy_from_bbox(self.ax_pos.bbox)
+
+
         # cache the axis for faster rendering
         self.fig.canvas.draw()
         self.ax_quiver_bg = self.fig.canvas.copy_from_bbox(self.ax_quiver.bbox)
-        self.ax_vel_bg = self.fig.canvas.copy_from_bbox(self.ax_vel.bbox)
-        self.ax_vel_bg = self.fig.canvas.copy_from_bbox(self.ax_vel.bbox)
-        self.ax_pos_bg = self.fig.canvas.copy_from_bbox(self.ax_pos.bbox)
+        self.ax_vel_clear_bg = self.fig.canvas.copy_from_bbox(self.ax_vel.bbox)
+        self.ax_pos_clear_bg = self.fig.canvas.copy_from_bbox(self.ax_pos.bbox)
         self.ax_audio_bg = self.fig.canvas.copy_from_bbox(self.ax_audio.bbox)
         self.ax_compass_bg = self.fig.canvas.copy_from_bbox(self.ax_compass.bbox)
+
+        # compute the kinematics and update the filled plots
+        self.compute_kinematics()
+        self.line_vel.set_ydata(self.flow_polarity * self.vel[:, self.flow_dir.value])
+        self.line_pos.set_ydata(self.flow_polarity * self.pos[:, self.flow_dir.value])
+        self.fig.canvas.draw()
+        self.ax_vel_filled_bg = self.fig.canvas.copy_from_bbox(self.ax_vel.bbox)
+        self.ax_pos_filled_bg = self.fig.canvas.copy_from_bbox(self.ax_pos.bbox)
+
 
         # now that we have cached the background add the varying plot features (image, quiver, time markers)
         plt.sca(self.ax_quiver)
@@ -170,8 +203,10 @@ class GUI:
 
         plt.show()
 
+
     def key_press(self, event):
         # print('press', event.key)
+        self.clear_velpos()
 
         if event.key == 'n':
             self.flow_polarity = -self.flow_polarity
@@ -188,6 +223,23 @@ class GUI:
             self.line_pos.set_ydata(self.flow_polarity*self.pos[:, self.flow_dir.value])
             self.ax_vel.set_title("Velocity (" + self.flow_dir_label + " in Video" + self.flow_pol_label + ")")
             self.ax_pos.set_title("Position (" + self.flow_dir_label + " in Video" + self.flow_pol_label + ")")
+        elif event.key == 'h':
+            self.flow_half_field = 0 if self.flow_half_field else 1
+            self.x_indices = self.x_indices_half if self.flow_half_field else self.x_indices_full
+            self.y_indices = self.y_indices_half if self.flow_half_field else self.y_indices_full
+            self.quiver_colors[0, 0] = 0
+            for row in self.quiver.get_facecolor():
+                row[0] = 1
+            # TODO: A lazy hack to force the quiver colormapping to work (it autoscales to the values)
+            self.quiver.get_facecolor()[0][0] = 0
+
+            if self.flow_half_field:
+                for row in self.quiver.get_facecolor()[int(self.quiver_plot_halfsize):]:
+                    row[0] = 0
+
+            self.compute_kinematics()
+            self.line_vel.set_ydata(self.flow_polarity * self.vel[:, self.flow_dir.value])
+            self.line_pos.set_ydata(self.flow_polarity * self.pos[:, self.flow_dir.value])
         elif (event.key == 'up') | (event.key == 'down'):
             shift_dir = -1 if event.key == 'up' else 1
             ylim_pos = self.ax_pos.get_ylim()
@@ -196,15 +248,21 @@ class GUI:
             ylim_vel_val = max(min(ylim_vel[1] + shift_dir * self.vel_ylim_del, self.vel_ylim_max), self.vel_ylim_min)
             self.ax_pos.set_ylim(-ylim_pos_val, ylim_pos_val)
             self.ax_vel.set_ylim(-ylim_vel_val, ylim_vel_val)
+        elif (event.key == 'm'):
+            filename = "temp.csv"
+            savepos = self.flow_polarity * self.pos[:, self.flow_dir.value]
+            np.savetxt(filename, savepos, delimiter=',', fmt='%1.10e')
+            print("Current position data saved to " + filename)
 
         # re-cache the plot backgrounds
-        self.fig.canvas.draw()
-        self.ax_vel_bg = self.fig.canvas.copy_from_bbox(self.ax_vel.bbox)
-        self.ax_pos_bg = self.fig.canvas.copy_from_bbox(self.ax_pos.bbox)
-
+        self.ax_vel.draw_artist(self.line_vel)
+        self.ax_pos.draw_artist(self.line_pos)
+        self.ax_vel_filled_bg = self.fig.canvas.copy_from_bbox(self.ax_vel.bbox)
+        self.ax_pos_filled_bg = self.fig.canvas.copy_from_bbox(self.ax_pos.bbox)
 
         # update the gui
         self.update_gui()
+
 
     def mouse_scroll(self, event):
         """ create mousewheel callback function for updating the plot to a new frame """
@@ -219,18 +277,29 @@ class GUI:
         # update the gui
         self.update_gui()
 
+
+    def clear_velpos(self):
+        """ refreshes the velocity and position plots without drawing markers """
+        self.fig.canvas.restore_region(self.ax_pos_clear_bg)
+        self.fig.canvas.restore_region(self.ax_vel_clear_bg)
+
+        # Use blitting to quickly refresh the canvas
+        self.fig.canvas.blit(self.ax_pos.bbox)
+        self.fig.canvas.blit(self.ax_vel.bbox)
+
+
     def update_gui(self):
         """ update the gui by changing the state according to the current frame """
         self.fig.canvas.restore_region(self.ax_quiver_bg)
-        self.fig.canvas.restore_region(self.ax_pos_bg)
-        self.fig.canvas.restore_region(self.ax_vel_bg)
+        self.fig.canvas.restore_region(self.ax_pos_filled_bg)
+        self.fig.canvas.restore_region(self.ax_vel_filled_bg)
         self.fig.canvas.restore_region(self.ax_audio_bg)
         self.fig.canvas.restore_region(self.ax_compass_bg)
 
         # update the plots
         self.im.set_data(self.ultra_interp[self.frame_index])
-        self.quiver.set_UVC(self.ofdisp[self.frame_index]['of'][1][self.y_indices, self.x_indices],
-                            self.ofdisp[self.frame_index]['of'][0][self.y_indices, self.x_indices])
+        self.quiver.set_UVC(self.ofdisp[self.frame_index]['of'][1][self.y_indices_plot, self.x_indices_plot],
+                            self.ofdisp[self.frame_index]['of'][0][self.y_indices_plot, self.x_indices_plot])
 
         #self.ofdisp[self.frame_index]['of'].forward[self.y_indices, self.x_indices, 0],
         #self.ofdisp[self.frame_index]['of'].forward[self.y_indices, self.x_indices, 1])
@@ -287,6 +356,7 @@ class GUI:
         # perform numerical integration
         self.pos[:, 0] = integrate.cumtrapz(self.vel[:, 0], self.ult_time[0:self.ult_no_frames - 1])
         self.pos[:, 1] = integrate.cumtrapz(self.vel[:, 1], self.ult_time[0:self.ult_no_frames - 1])
+
 
 
 def cart2pol(x, y):
