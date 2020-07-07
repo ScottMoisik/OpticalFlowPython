@@ -38,6 +38,8 @@ import math
 # numpy and scipy
 import numpy as np
 
+import sounddevice as sd
+
 # scientific plotting
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -107,6 +109,7 @@ class GUI:
         self.fig = plt.figure(figsize=(10, 8))
         self.ax_quiver = self.fig.add_axes([0.1, 0.6, 0.4, 0.4])
         plt.sca(self.ax_quiver)
+        #plt.set_cmap('Greys')
         self.im = self.ax_quiver.imshow(self.ultra_interp[0])
         self.quiver = plt.quiver(self.yy[self.x_indices_plot, self.y_indices_plot],
                                  self.xx[self.x_indices_plot, self.y_indices_plot],
@@ -237,12 +240,15 @@ class GUI:
             ylim_vel_val = max(min(ylim_vel[1] + shift_dir * self.vel_ylim_del, self.vel_ylim_max), self.vel_ylim_min)
             self.ax_pos.set_ylim(-ylim_pos_val, ylim_pos_val)
             self.ax_vel.set_ylim(-ylim_vel_val, ylim_vel_val)
-
         elif (event.key == 'm'):
             filename = "temp.csv"
+            savetime = self.ult_time[0:self.ult_no_frames-1]
             savepos = self.flow_polarity * self.pos[:, self.flow_dir.value]
-            np.savetxt(filename, savepos, delimiter=',', fmt='%1.10e')
+            np.savetxt(filename, np.c_[savetime, savepos], delimiter=',')
             print("Current position data saved to " + filename)
+        elif (event.key == ' '):
+            #TODO: Implement callback stream to continuously update the plot as the sound is played...
+            sd.play(self.wav_data, self.wav_fs)
 
         # re-cache the plot backgrounds
         self.ax_vel.set_title("Velocity (" + self.flow_dir_label + " in Video" + self.flow_pol_label + ")")
@@ -343,8 +349,10 @@ class GUI:
             disp_comp_h = self.ofdisp[fIdx]['of'][0][self.y_indices, self.x_indices] #self.ofdisp[fIdx]['of'].forward[:, :, 0]
             disp_comp_v = self.ofdisp[fIdx]['of'][1][self.y_indices, self.x_indices] #self.ofdisp[fIdx]['of'].forward[:, :, 1]
 
-            self.vel[fIdx, 0] = trim_mean(disp_comp_h.flatten(), 0.25) / self.ult_period * self.scaling
-            self.vel[fIdx, 1] = trim_mean(disp_comp_v.flatten(), 0.25) / self.ult_period * self.scaling
+            #self.vel[fIdx, 0] = trim_mean(disp_comp_h.flatten(), 0.25) / self.ult_period * self.scaling
+            #self.vel[fIdx, 1] = trim_mean(disp_comp_v.flatten(), 0.25) / self.ult_period * self.scaling
+            self.vel[fIdx, 0] = np.mean(disp_comp_h.flatten()) / self.ult_period * self.scaling
+            self.vel[fIdx, 1] = np.mean(disp_comp_v.flatten()) / self.ult_period * self.scaling
 
         # perform numerical integration
         self.pos = np.empty((self.ult_no_frames - 2, 2))
