@@ -70,9 +70,9 @@ class GUI:
         self.flow_dir = FlowDir.Horizontal
         self.flow_polarity = 1
         self.flow_half_field = 0
-        self.flow_dir_label = 'Horizontal in Video'
+        self.flow_dir_label = 'Horizontal'
         self.flow_pol_label = ''
-        self.skip_increment = 7
+        self.skip_increment = 3
         self.pos_ylim_del = 1
         self.vel_ylim_del = 10
         self.pos_ylim_min = 1
@@ -110,40 +110,40 @@ class GUI:
         self.im = self.ax_quiver.imshow(self.ultra_interp[0])
         self.quiver = plt.quiver(self.yy[self.x_indices_plot, self.y_indices_plot],
                                  self.xx[self.x_indices_plot, self.y_indices_plot],
-                                 self.ofdisp[0]['of'][1][self.y_indices_plot, self.x_indices_plot],
                                  self.ofdisp[0]['of'][0][self.y_indices_plot, self.x_indices_plot],
+                                 self.ofdisp[0]['of'][1][self.y_indices_plot, self.x_indices_plot],
                                  self.quiver_colors,
                                  cmap=cm.bwr, scale_units='xy', scale=0.5, angles='xy')
 
         # compute the velocity and position using the trimmed mean approach
         self.vel = np.empty((self.ult_no_frames - 1, 2))
-        self.pos = np.empty((self.ult_no_frames - 2, 2))
+        self.pos = np.empty((self.ult_no_frames - 2, 2)) # integration of velocity leaves us with N - 1, we pad afterwards
 
         # Add a compass plot to visualize the consensus vector
         angles, radii = cart2pol(self.vel[:, 0], self.vel[:, 1])
         angle, radius = cart2pol(self.vel[0, 0], self.vel[0, 1])
         self.ax_compass = self.fig.add_axes([0.7, 0.7, 0.2, 0.2], projection='polar')
-        self.ax_compass.set_ylim(0, max(radii)*0.5)
+        self.ax_compass.set_ylim(0, 100)
 
         # create velocity plot
         self.ax_vel = self.fig.add_axes([0.1, 0.5, 0.8, 0.1])
-        self.line_vel, = plt.plot(self.ult_time[0:self.ult_no_frames - 1], self.vel[:, self.flow_dir.value])
+        self.line_vel, = plt.plot(self.ult_time[0:self.ult_no_frames - 1], np.zeros(self.ult_no_frames-1)*np.nan) #self.vel[:, self.flow_dir.value])
         plt.axhline(linewidth=1, color='k')
         # TODO: Setting the xlim changes the tick scaling but not the data scale
         self.ax_vel.set_xlim([0.0, self.ult_time[-1]])
         self.ax_vel.set_ylim([-1e2, 1e2])
-        self.ax_vel.set_title("Velocity (" + self.flow_dir_label + ")")
+        self.title_vel = self.ax_vel.set_title("Velocity (" + self.flow_dir_label + " in Video)")
         self.ax_vel.set_ylabel("velocity (mm/s)")
         self.ax_vel.tick_params(bottom=False)
 
         # create position plot
         self.ax_pos = self.fig.add_axes([0.1, 0.3, 0.8, 0.1])
-        self.line_pos, = plt.plot(self.ult_time[1:self.ult_no_frames - 1], self.pos[:, self.flow_dir.value])
+        self.line_pos, = plt.plot(self.ult_time[0:self.ult_no_frames - 1], np.zeros(self.ult_no_frames-1)*np.nan) #self.pos[:, self.flow_dir.value])
         plt.axhline(linewidth=1, color='k')
         # TODO: Setting the xlim changes the tick scaling but not the data scale
         self.ax_pos.set_xlim([0.0, self.ult_time[-1]])
         self.ax_pos.set_ylim([-2e1, 2e1])
-        self.ax_pos.set_title("Position (" + self.flow_dir_label + ")")
+        self.title_pos = self.ax_pos.set_title("Position (" + self.flow_dir_label + " in Video)")
         self.ax_pos.set_ylabel("relative position (mm)")
         self.ax_pos.set_xlabel("time (s)")
         # cache the axis for faster rendering
@@ -163,15 +163,6 @@ class GUI:
         self.cid_scroll = self.fig.canvas.mpl_connect('scroll_event', self.mouse_scroll)
         self.fig.canvas.mpl_connect('key_press_event', self.key_press)
 
-
-        #self.redraw_velpos_no_markers()
-        #self.line_vel.set_ydata(self.flow_polarity * self.vel[:, self.flow_dir.value])
-        #self.line_pos.set_ydata(self.flow_polarity * self.pos[:, self.flow_dir.value])
-        #self.fig.canvas.draw()
-        #self.ax_vel_bg = self.fig.canvas.copy_from_bbox(self.ax_vel.bbox)
-        #self.ax_pos_bg = self.fig.canvas.copy_from_bbox(self.ax_pos.bbox)
-
-
         # cache the axis for faster rendering
         self.fig.canvas.draw()
         self.ax_quiver_bg = self.fig.canvas.copy_from_bbox(self.ax_quiver.bbox)
@@ -188,7 +179,6 @@ class GUI:
         self.ax_vel_filled_bg = self.fig.canvas.copy_from_bbox(self.ax_vel.bbox)
         self.ax_pos_filled_bg = self.fig.canvas.copy_from_bbox(self.ax_pos.bbox)
 
-
         # now that we have cached the background add the varying plot features (image, quiver, time markers)
         plt.sca(self.ax_quiver)
         self.quiver_frame_label = plt.text(1, 10, "1", fontsize=48, color="white")
@@ -200,12 +190,15 @@ class GUI:
         self.marker_line_audio, = plt.plot([self.wav_time[0], self.wav_time[0]], [-1, 1], color="r")
         plt.sca(self.ax_compass)
         self.marker_line_compass, = plt.plot([0, angle], [0, radius], color="r") #("", xy=(angle, radius), xytext=(0, 0), arrowprops=dict(arrowstyle="<-", color='k'))
-
+        self.fig.canvas.draw()
         plt.show()
+
+
 
 
     def key_press(self, event):
         # print('press', event.key)
+        #self.fig.canvas.draw()
         self.clear_velpos()
 
         if event.key == 'n':
@@ -213,16 +206,12 @@ class GUI:
             self.flow_pol_label = ', Negated' if self.flow_polarity is -1 else ''
             self.line_vel.set_ydata(self.flow_polarity*self.vel[:, self.flow_dir.value])
             self.line_pos.set_ydata(self.flow_polarity*self.pos[:, self.flow_dir.value])
-            self.ax_vel.set_title("Velocity (" + self.flow_dir_label + " in Video" + self.flow_pol_label + ")")
-            self.ax_pos.set_title("Position (" + self.flow_dir_label + " in Video" +self.flow_pol_label + ")")
         elif event.key == 'd':
             self.flow_dir = FlowDir.Vertical if self.flow_dir is FlowDir.Horizontal else FlowDir.Horizontal
             self.flow_dir_label = 'Vertical' if self.flow_dir is FlowDir.Vertical else 'Horizontal'
-
+            #print(self.flow_dir_label)
             self.line_vel.set_ydata(self.flow_polarity*self.vel[:, self.flow_dir.value])
             self.line_pos.set_ydata(self.flow_polarity*self.pos[:, self.flow_dir.value])
-            self.ax_vel.set_title("Velocity (" + self.flow_dir_label + " in Video" + self.flow_pol_label + ")")
-            self.ax_pos.set_title("Position (" + self.flow_dir_label + " in Video" + self.flow_pol_label + ")")
         elif event.key == 'h':
             self.flow_half_field = 0 if self.flow_half_field else 1
             self.x_indices = self.x_indices_half if self.flow_half_field else self.x_indices_full
@@ -248,6 +237,7 @@ class GUI:
             ylim_vel_val = max(min(ylim_vel[1] + shift_dir * self.vel_ylim_del, self.vel_ylim_max), self.vel_ylim_min)
             self.ax_pos.set_ylim(-ylim_pos_val, ylim_pos_val)
             self.ax_vel.set_ylim(-ylim_vel_val, ylim_vel_val)
+
         elif (event.key == 'm'):
             filename = "temp.csv"
             savepos = self.flow_polarity * self.pos[:, self.flow_dir.value]
@@ -255,6 +245,9 @@ class GUI:
             print("Current position data saved to " + filename)
 
         # re-cache the plot backgrounds
+        self.ax_vel.set_title("Velocity (" + self.flow_dir_label + " in Video" + self.flow_pol_label + ")")
+        self.ax_pos.set_title("Position (" + self.flow_dir_label + " in Video" + self.flow_pol_label + ")")
+
         self.ax_vel.draw_artist(self.line_vel)
         self.ax_pos.draw_artist(self.line_pos)
         self.ax_vel_filled_bg = self.fig.canvas.copy_from_bbox(self.ax_vel.bbox)
@@ -262,7 +255,7 @@ class GUI:
 
         # update the gui
         self.update_gui()
-
+        self.fig.canvas.draw()
 
     def mouse_scroll(self, event):
         """ create mousewheel callback function for updating the plot to a new frame """
@@ -298,8 +291,8 @@ class GUI:
 
         # update the plots
         self.im.set_data(self.ultra_interp[self.frame_index])
-        self.quiver.set_UVC(self.ofdisp[self.frame_index]['of'][1][self.y_indices_plot, self.x_indices_plot],
-                            self.ofdisp[self.frame_index]['of'][0][self.y_indices_plot, self.x_indices_plot])
+        self.quiver.set_UVC(self.ofdisp[self.frame_index]['of'][0][self.y_indices_plot, self.x_indices_plot],
+                            self.ofdisp[self.frame_index]['of'][1][self.y_indices_plot, self.x_indices_plot])
 
         #self.ofdisp[self.frame_index]['of'].forward[self.y_indices, self.x_indices, 0],
         #self.ofdisp[self.frame_index]['of'].forward[self.y_indices, self.x_indices, 1])
@@ -347,16 +340,19 @@ class GUI:
         # TODO this is working differently from the Matlab implementation (may need padding of the signals, e.g., following integration)
         # obtain the consensus velocity vector for each frame(pair)
         for fIdx in range(0, self.ult_no_frames - 1):
-            disp_comp_h = self.ofdisp[fIdx]['of'][1][self.y_indices, self.x_indices] #self.ofdisp[fIdx]['of'].forward[:, :, 0]
-            disp_comp_v = self.ofdisp[fIdx]['of'][0][self.y_indices, self.x_indices] #self.ofdisp[fIdx]['of'].forward[:, :, 1]
+            disp_comp_h = self.ofdisp[fIdx]['of'][0][self.y_indices, self.x_indices] #self.ofdisp[fIdx]['of'].forward[:, :, 0]
+            disp_comp_v = self.ofdisp[fIdx]['of'][1][self.y_indices, self.x_indices] #self.ofdisp[fIdx]['of'].forward[:, :, 1]
 
             self.vel[fIdx, 0] = trim_mean(disp_comp_h.flatten(), 0.25) / self.ult_period * self.scaling
             self.vel[fIdx, 1] = trim_mean(disp_comp_v.flatten(), 0.25) / self.ult_period * self.scaling
 
         # perform numerical integration
+        self.pos = np.empty((self.ult_no_frames - 2, 2))
         self.pos[:, 0] = integrate.cumtrapz(self.vel[:, 0], self.ult_time[0:self.ult_no_frames - 1])
         self.pos[:, 1] = integrate.cumtrapz(self.vel[:, 1], self.ult_time[0:self.ult_no_frames - 1])
 
+        # pad the position with zeros to match the length of the velocity
+        self.pos = np.concatenate((self.pos, np.array([[0.0, 0.0]])), axis=0)
 
 
 def cart2pol(x, y):

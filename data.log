@@ -1,3 +1,5 @@
-INFO:root:Run started at 2020-07-02 13:46:31.046168
+INFO:root:Run started at 2020-07-07 13:02:43.794228
 INFO:of.ofreg:PD: data\P1_01 test. item processed.
-INFO:root:Elapsed time 16.394304990768433
+INFO:of.ofreg:PD: data\P1_02 test. item processed.
+INFO:of.ofreg:PD: data\P1_03 test. item processed.
+INFO:root:Elapsed time 6.503306150436401
