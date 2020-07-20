@@ -56,12 +56,12 @@ from multiprocessing import Process, Manager
 import cv2
 
 # demons algorithim implemented in the PIRT package with visualization support
-import pirt
-import visvis as vv
+#import pirt
+#import visvis as vv
 
 # diffeomorphic demons algorithm implemented in python in the DIPY package
-from dipy.align.imwarp import SymmetricDiffeomorphicRegistration
-from dipy.align.metrics import SSDMetric, CCMetric, EMMetric
+#from dipy.align.imwarp import SymmetricDiffeomorphicRegistration
+#from dipy.align.metrics import SSDMetric, CCMetric, EMMetric
 # from dipy.viz import regtools
 
 # numpy and scipy
@@ -72,9 +72,9 @@ import scipy.ndimage as ndi
 # from scipy.signal import butter, filtfilt, kaiser, sosfilt
 
 from scipy import interpolate
-from skimage import transform
-import plotly.graph_objects as go
-import plotly.offline as pyo
+#from skimage import transform
+#import plotly.graph_objects as go
+#import plotly.offline as pyo
 
 # scientific plotting
 import matplotlib.image as image
@@ -211,20 +211,20 @@ def parallel_register(im1, im2, index, num_frames, storage):
     #warnings.filterwarnings("always")
 
 
-def pirt_reg(im1, im2):
-    # Init registration
-    reg = pirt.OriginalDemonsRegistration(im1, im2)
-    reg.params.scale_levels = 2 #Good: 2
-    reg.params.speed_factor = 3.0 #Good: 3.0
-    reg.params.noise_factor = 0.5 #Good: 0.5
-    reg.params.mapping = 'forward'
-    reg.params.scale_sampling = 5 #Good: 5
-    reg.params.final_grid_sampling = 2 #Good: 2
+#def pirt_reg(im1, im2):
+#    # Init registration
+#    reg = pirt.OriginalDemonsRegistration(im1, im2)
+#    reg.params.scale_levels = 2 #Good: 2
+#    reg.params.speed_factor = 3.0 #Good: 3.0
+#    reg.params.noise_factor = 0.5 #Good: 0.5
+#    reg.params.mapping = 'forward'
+#    reg.params.scale_sampling = 5 #Good: 5
+##    reg.params.final_grid_sampling = 2 #Good: 2#
 
     # Register (non-verbose)
-    reg.register(0)
+#    reg.register(0)
 
-    return reg.get_deform(0)._fields
+#    return reg.get_deform(0)._fields
 
 
 def opencv_opticalflow(im1, im2, flow_estimate=None):
@@ -266,6 +266,7 @@ def linear_probe_interpolation(ultra, ult_pixels_per_vector, ult_pixels_per_mm, 
 
 
 def radial_probe_interpolation(ultra, ult_pixels_per_vector, ult_pixels_per_mm, ult_num_vectors, ult_angle, ult_zero_offset, ult_no_frames):
+    # First compute the forward mapping from source to destination
     half_fan_rads = ult_num_vectors * ult_angle * 0.5
     right_edge_rads = math.pi * 0.5 - half_fan_rads
     angle_increments = right_edge_rads + np.arange(0, float(ult_num_vectors)) * ult_angle
@@ -279,27 +280,27 @@ def radial_probe_interpolation(ultra, ult_pixels_per_vector, ult_pixels_per_mm, 
     xdst, ydst = np.meshgrid(np.arange(np.min(locs_x), np.max(locs_x), 1.0),
                              np.arange(np.min(locs_y), np.max(locs_y), 1.0))
 
-    # Compute inverse mapping of pixels from source to destination (since cv2.remap requires the mapping from dst -> src)
+    # Now compute the inverse mapping of pixels from source to destination (since cv2.remap requires the mapping from dst -> src)
     xdstMm = (xdst * ult_pixels_per_mm)
     ydstMm = (ydst * ult_pixels_per_mm)
     theta = np.arctan2(ydstMm, xdstMm)
+    minAngle = np.min(angle_increments)
+    maxAngle = np.max(angle_increments)
+    thetaScaled = (theta - minAngle) / (maxAngle - minAngle)
+    thetaScaled *= ult_num_vectors #TODO: The ultrasound may be a bit off here - perhaps because of how angle_increments is defined
+    r = np.sqrt((xdstMm*xdstMm) + (ydstMm*ydstMm)) - ult_zero_offset
 
-    #TODO remap mapping not yet working... close
-    #r = np.sqrt((xdstMm*xdstMm) + (ydstMm*ydstMm))
-    #xsrc = ((r)*np.cos(theta)) - ult_zero_offset
-    #ysrc = ((r)*np.sin(theta)) - ult_zero_offset
-
-    plt.matshow(np.cos(theta))
+    im = plt.imshow(thetaScaled)
+    plt.colorbar()
     plt.show()
 
     ultra_interp = []
     probe_data = {probe_view_angle, probe_array_radius_mm, probe_array_depth_mm}
     for fIdx in range(0, ult_no_frames + 1):
 
-
-        f = cv2.remap(ultra[300, :, :], xsrc.astype(np.float32), ysrc.astype(np.float32), cv2.INTER_LINEAR)
-        plt.imshow(f)
-        plt.show()
+        f = np.flipud(cv2.remap(ultra[fIdx, :, :], r.astype(np.float32), thetaScaled.astype(np.float32), cv2.INTER_CUBIC))
+        #plt.imshow(f)
+        #plt.show()
         ultra_interp.append(f)
 
     return ultra_interp, probe_data
