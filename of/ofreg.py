@@ -56,12 +56,12 @@ from multiprocessing import Process, Manager
 import cv2
 
 # demons algorithim implemented in the PIRT package with visualization support
-import pirt
-import visvis as vv
+#import pirt
+#import visvis as vv
 
 # diffeomorphic demons algorithm implemented in python in the DIPY package
-from dipy.align.imwarp import SymmetricDiffeomorphicRegistration
-from dipy.align.metrics import SSDMetric, CCMetric, EMMetric
+#from dipy.align.imwarp import SymmetricDiffeomorphicRegistration
+#from dipy.align.metrics import SSDMetric, CCMetric, EMMetric
 # from dipy.viz import regtools
 
 # numpy and scipy
@@ -72,9 +72,9 @@ import scipy.ndimage as ndi
 # from scipy.signal import butter, filtfilt, kaiser, sosfilt
 
 from scipy import interpolate
-from skimage import transform
-import plotly.graph_objects as go
-import plotly.offline as pyo
+#from skimage import transform
+#import plotly.graph_objects as go
+#import plotly.offline as pyo
 
 # scientific plotting
 import matplotlib.image as image
@@ -211,20 +211,20 @@ def parallel_register(im1, im2, index, num_frames, storage):
     #warnings.filterwarnings("always")
 
 
-def pirt_reg(im1, im2):
-    # Init registration
-    reg = pirt.OriginalDemonsRegistration(im1, im2)
-    reg.params.scale_levels = 2 #Good: 2
-    reg.params.speed_factor = 3.0 #Good: 3.0
-    reg.params.noise_factor = 0.5 #Good: 0.5
-    reg.params.mapping = 'forward'
-    reg.params.scale_sampling = 5 #Good: 5
-    reg.params.final_grid_sampling = 2 #Good: 2
+#def pirt_reg(im1, im2):
+#    # Init registration
+#    reg = pirt.OriginalDemonsRegistration(im1, im2)
+#    reg.params.scale_levels = 2 #Good: 2
+#    reg.params.speed_factor = 3.0 #Good: 3.0
+#    reg.params.noise_factor = 0.5 #Good: 0.5
+#    reg.params.mapping = 'forward'
+#    reg.params.scale_sampling = 5 #Good: 5
+##    reg.params.final_grid_sampling = 2 #Good: 2#
 
     # Register (non-verbose)
-    reg.register(0)
+#    reg.register(0)
 
-    return reg.get_deform(0)._fields
+#    return reg.get_deform(0)._fields
 
 
 def opencv_opticalflow(im1, im2, flow_estimate=None):
@@ -291,6 +291,7 @@ def radial_probe_interpolation(ultra, ult_pixels_per_vector, ult_pixels_per_mm, 
     thetaScaled *= ult_num_vectors #TODO: The ultrasound may be a bit off here - perhaps because of how angle_increments is defined
     r = np.sqrt((xdstMm*xdstMm) + (ydstMm*ydstMm)) - ult_zero_offset
 
+<<<<<<< HEAD
     #im = plt.imshow(thetaScaled)
     #plt.colorbar()
     #plt.show()
@@ -298,6 +299,15 @@ def radial_probe_interpolation(ultra, ult_pixels_per_vector, ult_pixels_per_mm, 
     ultra_interp = []
     probe_data = {probe_view_angle, probe_array_radius_mm, probe_array_depth_mm}
     for fIdx in range(0, ult_no_frames):
+=======
+    im = plt.imshow(thetaScaled)
+    plt.colorbar()
+    plt.show()
+
+    ultra_interp = []
+    probe_data = {probe_view_angle, probe_array_radius_mm, probe_array_depth_mm}
+    for fIdx in range(0, ult_no_frames + 1):
+>>>>>>> 259211e53854b997f38ed62d791b558cf98ed1ac
 
         f = np.flipud(cv2.remap(ultra[fIdx, :, :], r.astype(np.float32), thetaScaled.astype(np.float32), cv2.INTER_CUBIC))
         #plt.imshow(f)
