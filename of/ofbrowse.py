@@ -373,9 +373,9 @@ def cart2pol(x, y):
 
 def main():
     # TODO hard coded path for convenience while developing code
-    #filename = "..\\results\\P1_01_OF.pickle"
+    filename = "..\\results\\P1_01_OF.pickle"
     #filename = "..\\results\\xFile004_OF.pickle"
-    filename = "..\\results\\birdie_OF.pickle"
+    #filename = "..\\results\\birdie_OF.pickle"
     # unpickle an OF file produced by ofreg.py
     data = pickle.load(open(filename, "rb"))
 

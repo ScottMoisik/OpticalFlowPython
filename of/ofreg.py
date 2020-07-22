@@ -291,7 +291,6 @@ def radial_probe_interpolation(ultra, ult_pixels_per_vector, ult_pixels_per_mm, 
     thetaScaled *= ult_num_vectors #TODO: The ultrasound may be a bit off here - perhaps because of how angle_increments is defined
     r = np.sqrt((xdstMm*xdstMm) + (ydstMm*ydstMm)) - ult_zero_offset
 
-<<<<<<< HEAD
     #im = plt.imshow(thetaScaled)
     #plt.colorbar()
     #plt.show()
@@ -299,15 +298,6 @@ def radial_probe_interpolation(ultra, ult_pixels_per_vector, ult_pixels_per_mm, 
     ultra_interp = []
     probe_data = {probe_view_angle, probe_array_radius_mm, probe_array_depth_mm}
     for fIdx in range(0, ult_no_frames):
-=======
-    im = plt.imshow(thetaScaled)
-    plt.colorbar()
-    plt.show()
-
-    ultra_interp = []
-    probe_data = {probe_view_angle, probe_array_radius_mm, probe_array_depth_mm}
-    for fIdx in range(0, ult_no_frames + 1):
->>>>>>> 259211e53854b997f38ed62d791b558cf98ed1ac
 
         f = np.flipud(cv2.remap(ultra[fIdx, :, :], r.astype(np.float32), thetaScaled.astype(np.float32), cv2.INTER_CUBIC))
         #plt.imshow(f)

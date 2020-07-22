@@ -1,7 +1,6 @@
-<<<<<<< HEAD
-INFO:root:Run started at 2020-07-22 16:25:39.004876
-INFO:of.ofreg:PD: data\birdie birdie. item processed.
-=======
-INFO:root:Run started at 2020-07-20 22:24:43.445216
-INFO:of.ofreg:PD: C:\Users\Scott Reid Moisik\Documents\Programs\Python\OpticalFlowPython\data\xFile004 002   ru. item processed.
->>>>>>> 259211e53854b997f38ed62d791b558cf98ed1ac
+INFO:root:Run started at 2020-07-22 16:49:40.207151
+INFO:of.ofreg:PD: data\xFile004 002   ru. item processed.
+INFO:of.ofreg:PD: data\P1_01 test. item processed.
+INFO:of.ofreg:PD: data\P1_02 test. item processed.
+INFO:of.ofreg:PD: data\P1_03 test. item processed.
+INFO:root:Elapsed time 23.510781049728394
