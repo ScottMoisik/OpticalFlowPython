@@ -266,6 +266,7 @@ def linear_probe_interpolation(ultra, ult_pixels_per_vector, ult_pixels_per_mm, 
 
 
 def radial_probe_interpolation(ultra, ult_pixels_per_vector, ult_pixels_per_mm, ult_num_vectors, ult_angle, ult_zero_offset, ult_no_frames):
+    # First compute the forward mapping from source to destination
     half_fan_rads = ult_num_vectors * ult_angle * 0.5
     right_edge_rads = math.pi * 0.5 - half_fan_rads
     angle_increments = right_edge_rads + np.arange(0, float(ult_num_vectors)) * ult_angle
@@ -276,30 +277,31 @@ def radial_probe_interpolation(ultra, ult_pixels_per_vector, ult_pixels_per_mm, 
     probe_view_angle = ult_num_vectors * ult_angle * 180 / math.pi
     probe_array_radius_mm = ult_zero_offset / ult_pixels_per_mm
     probe_array_depth_mm = ult_pixels_per_vector / ult_pixels_per_mm
-    xdst, ydst = np.meshgrid(np.arange(np.min(locs_x), np.max(locs_x), 1.0),
-                             np.arange(np.min(locs_y), np.max(locs_y), 1.0))
+    #TODO Resolution of some US videos can be too high (causing OutOfMemory error when remapping below); this can be solved by downsampling the remapped image
+    xdst, ydst = np.meshgrid(np.arange(np.min(locs_x), np.max(locs_x), 1.0), #10.0),
+                             np.arange(np.min(locs_y), np.max(locs_y), 1.0)) #10.0))
 
-    # Compute inverse mapping of pixels from source to destination (since cv2.remap requires the mapping from dst -> src)
+    # Now compute the inverse mapping of pixels from source to destination (since cv2.remap requires the mapping from dst -> src)
     xdstMm = (xdst * ult_pixels_per_mm)
     ydstMm = (ydst * ult_pixels_per_mm)
     theta = np.arctan2(ydstMm, xdstMm)
+    minAngle = np.min(angle_increments)
+    maxAngle = np.max(angle_increments)
+    thetaScaled = (theta - minAngle) / (maxAngle - minAngle)
+    thetaScaled *= ult_num_vectors #TODO: The ultrasound may be a bit off here - perhaps because of how angle_increments is defined
+    r = np.sqrt((xdstMm*xdstMm) + (ydstMm*ydstMm)) - ult_zero_offset
 
-    #TODO remap mapping not yet working... close
-    #r = np.sqrt((xdstMm*xdstMm) + (ydstMm*ydstMm))
-    #xsrc = ((r)*np.cos(theta)) - ult_zero_offset
-    #ysrc = ((r)*np.sin(theta)) - ult_zero_offset
-
-    plt.matshow(np.cos(theta))
-    plt.show()
+    #im = plt.imshow(thetaScaled)
+    #plt.colorbar()
+    #plt.show()
 
     ultra_interp = []
     probe_data = {probe_view_angle, probe_array_radius_mm, probe_array_depth_mm}
-    for fIdx in range(0, ult_no_frames + 1):
+    for fIdx in range(0, ult_no_frames):
 
-
-        f = cv2.remap(ultra[300, :, :], xsrc.astype(np.float32), ysrc.astype(np.float32), cv2.INTER_LINEAR)
-        plt.imshow(f)
-        plt.show()
+        f = np.flipud(cv2.remap(ultra[fIdx, :, :], r.astype(np.float32), thetaScaled.astype(np.float32), cv2.INTER_CUBIC))
+        #plt.imshow(f)
+        #plt.show()
         ultra_interp.append(f)
 
     return ultra_interp, probe_data

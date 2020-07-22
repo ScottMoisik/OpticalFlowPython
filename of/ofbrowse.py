@@ -86,8 +86,9 @@ class GUI:
         self.scaling = 1.0
 
         # visualize registration as quiver plot
-        self.xx, self.yy = np.meshgrid(range(1, self.ultra_interp[0].shape[0]),
-                                       range(1, self.ultra_interp[0].shape[1]))
+        self.quiver_x_range = range(1, self.ultra_interp[0].shape[0])
+        self.quiver_y_range = range(1, self.ultra_interp[0].shape[1])
+        self.xx, self.yy = np.meshgrid(self.quiver_x_range, self.quiver_y_range)
 
         self.x_indices_full, self.y_indices_full = np.meshgrid(np.arange(0, self.xx.shape[0]),
                                                                np.arange(0, self.xx.shape[1]))
@@ -95,7 +96,6 @@ class GUI:
                                                                np.arange(0, self.xx.shape[1]))
         self.x_indices_plot, self.y_indices_plot = np.meshgrid(np.arange(0, self.xx.shape[0], self.skip_increment),
                                                               np.arange(0, self.xx.shape[1], self.skip_increment))
-
 
         self.quiver_colors = np.empty(shape=np.shape(self.x_indices_plot))
         self.quiver_colors.fill(1)
@@ -184,7 +184,7 @@ class GUI:
 
         # now that we have cached the background add the varying plot features (image, quiver, time markers)
         plt.sca(self.ax_quiver)
-        self.quiver_frame_label = plt.text(1, 10, "1", fontsize=48, color="white")
+        self.quiver_frame_label = plt.text(1, self.quiver_y_range[-1]*0.15, "1", fontsize=48, color="white")
         plt.sca(self.ax_vel)
         self.point_vel, = plt.plot(self.ult_time[0], self.vel[0, self.flow_dir.value], marker="o", ls="", color="r")
         plt.sca(self.ax_pos)
@@ -373,8 +373,9 @@ def cart2pol(x, y):
 
 def main():
     # TODO hard coded path for convenience while developing code
-    filename = "..\\results\\P1_01_OF.pickle"
-
+    #filename = "..\\results\\P1_01_OF.pickle"
+    #filename = "..\\results\\xFile004_OF.pickle"
+    filename = "..\\results\\birdie_OF.pickle"
     # unpickle an OF file produced by ofreg.py
     data = pickle.load(open(filename, "rb"))
 
