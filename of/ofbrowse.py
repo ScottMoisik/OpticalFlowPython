@@ -30,7 +30,6 @@
 #
 
 
-# TODO: Need to stop execution upon closing the matplotlib figure (calling exit(0) via an on_close callback predictably generates an error)
 
 import pickle
 import enum
@@ -169,6 +168,9 @@ class GUI:
         # connect the callbacks
         self.cid_scroll = self.fig.canvas.mpl_connect('scroll_event', self.mouse_scroll)
         self.fig.canvas.mpl_connect('key_press_event', self.key_press)
+
+        # TODO: Need to stop execution upon closing the matplotlib figure (calling exit(0) via an on_close callback predictably generates an error)
+        #self.fig.canvas.mpl_connect('close_event', self.on_close)
 
         # cache the axis for faster rendering
         self.fig.canvas.draw()
@@ -399,13 +401,6 @@ def filebrowse():
 
 
 def main():
-    # TODO hard coded path for convenience while developing code
-    #filename = "..\\results\\P1_01_OF.pickle"
-    #filename = "..\\results\\xFile004_OF.pickle"
-    #filename = "..\\results\\birdie_OF.pickle"
-    #filename = "..\\results\\H0_LUS_04_OF.pickle"
-    #filename = "..\\results\\H0_LUS_31_OF.pickle"
-
     root = tk.Tk()
     root.withdraw()
 
