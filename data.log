@@ -1,6 +1,3 @@
-INFO:root:Run started at 2020-07-22 16:49:40.207151
-INFO:of.ofreg:PD: data\xFile004 002   ru. item processed.
-INFO:of.ofreg:PD: data\P1_01 test. item processed.
-INFO:of.ofreg:PD: data\P1_02 test. item processed.
-INFO:of.ofreg:PD: data\P1_03 test. item processed.
-INFO:root:Elapsed time 23.510781049728394
+INFO:root:Run started at 2020-10-20 15:35:14.134465
+INFO:of.ofreg:PD: data\H0_LUS_31 chòu. item processed.
+INFO:root:Elapsed time 18.825379371643066
