@@ -27,8 +27,13 @@
 import argparse
 import logging
 import sys
+import os
 import time
 import datetime
+
+import tkinter as tk
+from tkinter import filedialog
+from tkinter import messagebox
 
 # local modules
 from of import ofreg as of
@@ -90,10 +95,52 @@ def main():
     logging.info('Run started at ' + str(datetime.datetime.now()))
 
     # this is the actual list of items that gets processed including meta data contained outwith the ult file
-    data_list = of.get_data_from_dir(directory)
+    root = tk.Tk()
+    root.withdraw()
 
-    # run OF on each item
-    data = of.compute(data_list)
+    # Ask the user which folder to open
+    while True:
+        data_directory = filedialog.askdirectory(title="Select data directory...")
+
+        if data_directory:
+            data_list = of.get_data_from_dir(data_directory)
+
+            answer = messagebox.askyesnocancel("Proceed with analysis",
+                                   "Found " + str(len(data_list)) + " ultrasound data packages. Proceed with analysis and use default results folder (Yes), choose results folder (No), or cancel?",
+                                   icon='warning')
+            if answer:
+                results_directory = os.path.join(data_directory, "results")
+                while True:
+                    if os.path.exists(results_directory):
+                        if messagebox.askokcancel("Warning", "Use existing results folder?", icon="warning"):
+                            break
+                        else:
+                            exit(0)
+                    else:
+                        #Make the folder
+                        os.makedirs(results_directory)
+                        break
+
+                # run OF on each item
+                data = of.compute(data_list, results_directory)
+                exit(0)
+            elif answer is None:
+                exit(0)
+            else:
+                results_directory = filedialog.askdirectory(title="Select results directory...")
+                if results_directory:
+                    # run OF on each item
+                    data = of.compute(data_list, results_directory)
+                    exit(0)
+                else :
+                    exit(0)
+        else:
+            answer = messagebox.askretrycancel("File select", "No folder was selected. Try again?")
+            if not answer:
+                break
+
+
+
 
 
 if __name__ == '__main__':

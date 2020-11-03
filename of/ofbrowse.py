@@ -30,8 +30,9 @@
 #
 
 
+# TODO: Need to stop execution upon closing the matplotlib figure (calling exit(0) via an on_close callback predictably generates an error)
+
 import pickle
-import os
 import enum
 import math
 
@@ -43,11 +44,16 @@ import sounddevice as sd
 # scientific plotting
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+from matplotlib.widgets import Button
+
 from matplotlib.colors import Normalize
 import scipy
 from scipy import integrate
 from scipy.stats import trim_mean
 
+import tkinter as tk
+from tkinter import filedialog
+from tkinter import messagebox
 
 class FlowDir(enum.Enum):
     Horizontal = 0
@@ -123,8 +129,6 @@ class GUI:
         self.pos = np.empty((self.ult_no_frames - 2, 2)) # integration of velocity leaves us with N - 1, we pad afterwards
 
         # Add a compass plot to visualize the consensus vector
-        angles, radii = cart2pol(self.vel[:, 0], self.vel[:, 1])
-        angle, radius = cart2pol(self.vel[0, 0], self.vel[0, 1])
         self.ax_compass = self.fig.add_axes([0.7, 0.7, 0.2, 0.2], projection='polar')
         self.ax_compass.set_ylim(0, 100)
 
@@ -192,11 +196,9 @@ class GUI:
         plt.sca(self.ax_audio)
         self.marker_line_audio, = plt.plot([self.wav_time[0], self.wav_time[0]], [-1, 1], color="r")
         plt.sca(self.ax_compass)
-        self.marker_line_compass, = plt.plot([0, angle], [0, radius], color="r") #("", xy=(angle, radius), xytext=(0, 0), arrowprops=dict(arrowstyle="<-", color='k'))
+        self.marker_line_compass, = plt.plot([0, 1], [0, 1], color="r") #("", xy=(angle, radius), xytext=(0, 0), arrowprops=dict(arrowstyle="<-", color='k'))
         self.fig.canvas.draw()
         plt.show()
-
-
 
 
     def key_press(self, event):
@@ -240,7 +242,7 @@ class GUI:
             ylim_vel_val = max(min(ylim_vel[1] + shift_dir * self.vel_ylim_del, self.vel_ylim_max), self.vel_ylim_min)
             self.ax_pos.set_ylim(-ylim_pos_val, ylim_pos_val)
             self.ax_vel.set_ylim(-ylim_vel_val, ylim_vel_val)
-        elif (event.key == 'm'):
+        elif event.key == 'm':
             filename = "temp.csv"
             savetime = self.ult_time[0:self.ult_no_frames-1]
             savepos = self.flow_polarity * self.pos[:, self.flow_dir.value]
@@ -250,18 +252,23 @@ class GUI:
             #TODO: Implement callback stream to continuously update the plot as the sound is played...
             sd.play(self.wav_data, self.wav_fs)
 
-        # re-cache the plot backgrounds
-        self.ax_vel.set_title("Velocity (" + self.flow_dir_label + " in Video" + self.flow_pol_label + ")")
-        self.ax_pos.set_title("Position (" + self.flow_dir_label + " in Video" + self.flow_pol_label + ")")
+        # Check if the escape key was pressed, in which case we destroy the GUI. Otherwise we update the GUI.
+        if event.key == 'escape':
+            plt.close(self.fig)
+            filebrowse()
+        else:
+            # re-cache the plot backgrounds
+            self.ax_vel.set_title("Velocity (" + self.flow_dir_label + " in Video" + self.flow_pol_label + ")")
+            self.ax_pos.set_title("Position (" + self.flow_dir_label + " in Video" + self.flow_pol_label + ")")
 
-        self.ax_vel.draw_artist(self.line_vel)
-        self.ax_pos.draw_artist(self.line_pos)
-        self.ax_vel_filled_bg = self.fig.canvas.copy_from_bbox(self.ax_vel.bbox)
-        self.ax_pos_filled_bg = self.fig.canvas.copy_from_bbox(self.ax_pos.bbox)
+            self.ax_vel.draw_artist(self.line_vel)
+            self.ax_pos.draw_artist(self.line_pos)
+            self.ax_vel_filled_bg = self.fig.canvas.copy_from_bbox(self.ax_vel.bbox)
+            self.ax_pos_filled_bg = self.fig.canvas.copy_from_bbox(self.ax_pos.bbox)
 
-        # update the gui
-        self.update_gui()
-        self.fig.canvas.draw()
+            # update the gui
+            self.update_gui()
+            self.fig.canvas.draw()
 
     def mouse_scroll(self, event):
         """ create mousewheel callback function for updating the plot to a new frame """
@@ -304,8 +311,11 @@ class GUI:
         #self.ofdisp[self.frame_index]['of'].forward[self.y_indices, self.x_indices, 1])
 
         angle, radius = cart2pol(self.vel[self.frame_index, 0], self.vel[self.frame_index, 1])
-        self.marker_line_compass.set_xdata([0, angle])
-        self.marker_line_compass.set_ydata([0, radius])
+        try:
+            self.marker_line_compass.set_xdata([0, angle])
+            self.marker_line_compass.set_ydata([0, radius])
+        except RuntimeWarning:
+            print("Problem updating compass plot")
 
         self.point_vel.set_xdata(self.ult_time[self.frame_index])
         self.point_vel.set_ydata(self.flow_polarity*self.vel[self.frame_index, self.flow_dir.value])
@@ -367,8 +377,25 @@ def cart2pol(x, y):
     # Based on: https://ocefpaf.github.io/python4oceanographers/blog/2015/02/09/compass/
     radius = np.hypot(x, y)
     theta = np.arctan2(y, x)
+
     return theta, radius
 
+
+def filebrowse():
+    while True:
+        filename = filedialog.askopenfile(initialdir="..\\results\\")
+
+        if filename:
+            # unpickle an OF file produced by ofreg.py
+            data = pickle.load(open(filename.name, "rb"))
+
+            # create the ofbrowse gui (scaffolded on Matplotlib)
+            gd = GUI(data)
+            break
+        else:
+            #answer = messagebox.askretrycancel("File select", "No file was selected. Try again?")
+            #if not answer:
+            break
 
 
 def main():
@@ -377,16 +404,14 @@ def main():
     #filename = "..\\results\\xFile004_OF.pickle"
     #filename = "..\\results\\birdie_OF.pickle"
     #filename = "..\\results\\H0_LUS_04_OF.pickle"
-    filename = "..\\results\\H0_LUS_31_OF.pickle"
-    # unpickle an OF file produced by ofreg.py
-    data = pickle.load(open(filename, "rb"))
+    #filename = "..\\results\\H0_LUS_31_OF.pickle"
 
-    # TODO export first field to compare it with the Matlab results
-    # ofdisp = data['ofdisp']
-    # np.savetxt("P1_01_test.txt", ofdisp[0]['of'].forward[:, :, 0], fmt="%.4f")
+    root = tk.Tk()
+    root.withdraw()
 
-    # create the ofbrowse gui (scaffolded on Matplotlib)
-    gd = GUI(data)
+    # Ask the user which file to open
+    filebrowse()
+
 
 if __name__ == '__main__':
     main()
