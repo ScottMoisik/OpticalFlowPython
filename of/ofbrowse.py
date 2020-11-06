@@ -54,6 +54,9 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
 
+# local modules
+from of.ofsupport import compute_kinematics
+
 class FlowDir(enum.Enum):
     Horizontal = 0
     Vertical = 1
@@ -181,7 +184,7 @@ class GUI:
         self.ax_compass_bg = self.fig.canvas.copy_from_bbox(self.ax_compass.bbox)
 
         # compute the kinematics and update the filled plots
-        self.compute_kinematics()
+        self.pos, self.vel = compute_kinematics(self.ofdisp, self.ult_time, self.ult_no_frames, self.x_indices, self.y_indices, self.ult_period, self.scaling)
         self.line_vel.set_ydata(self.flow_polarity * self.vel[:, self.flow_dir.value])
         self.line_pos.set_ydata(self.flow_polarity * self.pos[:, self.flow_dir.value])
         self.fig.canvas.draw()
@@ -233,7 +236,7 @@ class GUI:
                 for row in self.quiver.get_facecolor()[int(self.quiver_plot_halfsize):]:
                     row[0] = 0
 
-            self.compute_kinematics()
+            self.pos, self.vel = compute_kinematics(self.ofdisp, self.ult_time, self.ult_no_frames, self.x_indices, self.y_indices, self.ult_period, self.scaling)
             self.line_vel.set_ydata(self.flow_polarity * self.vel[:, self.flow_dir.value])
             self.line_pos.set_ydata(self.flow_polarity * self.pos[:, self.flow_dir.value])
         elif (event.key == 'up') | (event.key == 'down'):
@@ -350,29 +353,6 @@ class GUI:
         self.fig.canvas.blit(self.ax_compass.bbox)
 
         #self.fig.canvas.flush_events()
-
-    def compute_kinematics(self):
-        """ compute the velocity and position from the displacement field """
-
-        # TODO implement alternative means of obtaining the consensus vector
-        # TODO this is working differently from the Matlab implementation (may need padding of the signals, e.g., following integration)
-        # obtain the consensus velocity vector for each frame(pair)
-        for fIdx in range(0, self.ult_no_frames - 1):
-            disp_comp_h = self.ofdisp[fIdx]['of'][0][self.y_indices, self.x_indices] #self.ofdisp[fIdx]['of'].forward[:, :, 0]
-            disp_comp_v = self.ofdisp[fIdx]['of'][1][self.y_indices, self.x_indices] #self.ofdisp[fIdx]['of'].forward[:, :, 1]
-
-            #self.vel[fIdx, 0] = trim_mean(disp_comp_h.flatten(), 0.25) / self.ult_period * self.scaling
-            #self.vel[fIdx, 1] = trim_mean(disp_comp_v.flatten(), 0.25) / self.ult_period * self.scaling
-            self.vel[fIdx, 0] = np.mean(disp_comp_h.flatten()) / self.ult_period * self.scaling
-            self.vel[fIdx, 1] = np.mean(disp_comp_v.flatten()) / self.ult_period * self.scaling
-
-        # perform numerical integration
-        self.pos = np.empty((self.ult_no_frames - 2, 2))
-        self.pos[:, 0] = integrate.cumtrapz(self.vel[:, 0], self.ult_time[0:self.ult_no_frames - 1])
-        self.pos[:, 1] = integrate.cumtrapz(self.vel[:, 1], self.ult_time[0:self.ult_no_frames - 1])
-
-        # pad the position with zeros to match the length of the velocity
-        self.pos = np.concatenate((self.pos, np.array([[0.0, 0.0]])), axis=0)
 
 
 def cart2pol(x, y):

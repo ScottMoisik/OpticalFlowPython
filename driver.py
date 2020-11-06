@@ -31,6 +31,9 @@ import os
 import time
 import datetime
 
+import pickle
+import csv
+import numpy as np
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
@@ -122,7 +125,7 @@ def main():
                         break
 
                 # run OF on each item
-                data = of.compute(data_list, results_directory)
+                ofdata_file_list = of.compute(data_list, results_directory)
                 exit(0)
             elif answer is None:
                 exit(0)
