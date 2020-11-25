@@ -1,5 +1,161 @@
-INFO:root:Run started at 2020-11-06 18:17:45.496281
-INFO:of.ofreg:PD: D:/Programs/Python/OpticalFlowPython/data/temp\xFile004 002   ru. item processed.
-INFO:of.ofreg:PD: D:/Programs/Python/OpticalFlowPython/data/temp\P1_01 test. item processed.
-INFO:of.ofreg:PD: D:/Programs/Python/OpticalFlowPython/data/temp\P1_02 test. item processed.
-INFO:of.ofreg:PD: D:/Programs/Python/OpticalFlowPython/data/temp\P1_03 test. item processed.
+INFO:root:Run started at 2020-11-25 11:16:29.829036
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P004\P004_LxUS_04 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P004\P004_LxUS_05 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P004\P004_LxUS_06 tea. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P004\P004_LxUS_07 tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P005\P005_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P005\P005_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P005\P005_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P005\P005_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P006\P006_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P006\P006_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P006\P006_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P006\P006_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P007\P007_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P007\P007_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P007\P007_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P007\P007_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P008\P008_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P008\P008_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P008\P008_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P008\P008_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P009\P009_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P009\P009_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P009\P009_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P009\P009_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P010\P010_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P010\P010_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P010\P010_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P010\P010_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P011\P011_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P011\P011_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P011\P011_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P011\P011_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P012\P012_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P012\P012_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P012\P012_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P012\P012_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P013\P013_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P013\P013_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P013\P013_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P013\P013_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P014\P014_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P014\P014_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P014\P014_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P014\P014_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P015\P015_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P015\P015_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P015\P015_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P015\P015_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P016\P016_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P016\P016_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P016\P016_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P016\P016_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P017\P017_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P017\P017_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P017\P017_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P017\P017_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P018\P018_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P018\P018_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P018\P018_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P018\P018_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P019\P019_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P019\P019_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P019\P019_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P019\P019_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P020\P020_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P020\P020_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P020\P020_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P020\P020_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P021\P021_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P021\P021_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P021\P021_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P021\P021_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P022\P022_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P022\P022_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P022\P022_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P022\P022_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P023\P023_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P023\P023_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P023\P023_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P023\P023_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P024\P024_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P024\P024_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P024\P024_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P024\P024_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P025\P025_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P025\P025_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P025\P025_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P025\P025_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P026\P026_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P026\P026_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P026\P026_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P026\P026_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P027\P027_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P027\P027_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P027\P027_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P027\P027_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P028\P028_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P028\P028_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P028\P028_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P028\P028_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P029\P029_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P029\P029_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P029\P029_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P029\P029_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P030\P030_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P030\P030_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P030\P030_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P030\P030_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P031\P031_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P031\P031_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P031\P031_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P031\P031_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P032\P032_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P032\P032_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P032\P032_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P032\P032_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P033\P033_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P033\P033_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P033\P033_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P033\P033_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P034\P034_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P034\P034_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P034\P034_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P034\P034_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P035\P035_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P035\P035_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P035\P035_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P035\P035_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P036\P036_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P036\P036_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P036\P036_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P036\P036_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P037\P037_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P037\P037_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P037\P037_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P037\P037_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P038\P038_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P038\P038_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P038\P038_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P038\P038_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P039\P039_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P039\P039_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P039\P039_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P039\P039_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P040\P040_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P040\P040_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P040\P040_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P040\P040_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P041\P041_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P041\P041_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P041\P041_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P041\P041_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P042\P042_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P042\P042_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P042\P042_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P042\P042_LxUS_04 watching tv. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P043\P043_LxUS_01 desserts. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P043\P043_LxUS_02 pizza. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P043\P043_LxUS_03 TWG. item processed.
+INFO:of.ofreg:PD: D:/AAA Ultrasound Data/Lin Jingmin - Vowels Laryngeal\P043\P043_LxUS_04 watching tv. item processed.

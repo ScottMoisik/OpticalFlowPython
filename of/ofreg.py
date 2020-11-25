@@ -39,6 +39,7 @@ from datetime import datetime
 import csv
 import math
 import glob
+import pathlib
 import logging
 import os
 import os.path
@@ -51,6 +52,7 @@ import warnings
 import wave
 
 from multiprocessing import Process, Manager
+from pathlib import Path
 
 # optical flow algorithm implemented in openCV
 import cv2
@@ -139,16 +141,27 @@ def read_ult_meta(filebase):
 
 
 def get_data_from_dir(directory):
+    ult_meta_files = sorted(glob.glob(directory + '/**/*US.txt', recursive=True))
+    ult_txt_files = glob.glob(directory + '/**/*.txt', recursive=True)
+
     # this is equivalent with the following: sorted(glob.glob(directory + '/.' +  '/*US.txt'))
-    ult_meta_files = sorted(glob.glob(directory + '/*US.txt'))
+    #ult_meta_files = sorted(glob.glob(directory + '/*US.txt'))
 
     # this takes care of *.txt and *US.txt overlapping.
     ult_prompt_files = [prompt_file
-                        for prompt_file in glob.glob(directory + '/*.txt')
+                        for prompt_file in ult_txt_files #glob.glob(directory + '/*.txt')
                         if not prompt_file in ult_meta_files
                         ]
 
-    ult_prompt_files = sorted(ult_prompt_files)
+    # remove any txt files that are not matched by a corresponding *US.txt file
+    ult_meta_base_names = []
+    for ult_meta_file in ult_meta_files:
+        ult_meta_base_names.append(os.path.splitext(os.path.basename(ult_meta_file))[0][:-2])
+
+    ult_prompt_files_filtered = [b for b in ult_prompt_files if
+                                 any(a in b for a in ult_meta_base_names)]
+
+    ult_prompt_files = sorted(ult_prompt_files_filtered)
     filebases = [os.path.splitext(pf)[0] for pf in ult_prompt_files]
     meta = [{'filebase': filebase} for filebase in filebases]
 

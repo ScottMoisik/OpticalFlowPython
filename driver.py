@@ -30,7 +30,7 @@ import sys
 import os
 import time
 import datetime
-
+import glob
 import pickle
 import csv
 import numpy as np
@@ -106,37 +106,54 @@ def main():
         data_directory = filedialog.askdirectory(title="Select data directory...")
 
         if data_directory:
+            # Search for TextGrid files to use as a filter on ult files and ask if this should be done
+            tg_list = list(glob.glob(data_directory + '/**/*.TextGrid', recursive=True))
             data_list = of.get_data_from_dir(data_directory)
 
-            answer = messagebox.askyesnocancel("Proceed with analysis",
-                                   "Found " + str(len(data_list)) + " ultrasound data packages. Proceed with analysis and use default results folder (Yes), choose results folder (No), or cancel?",
-                                   icon='warning')
-            if answer:
-                results_directory = os.path.join(data_directory, "results")
-                while True:
-                    if os.path.exists(results_directory):
-                        if messagebox.askokcancel("Warning", "Use existing results folder?", icon="warning"):
-                            break
-                        else:
-                            exit(0)
-                    else:
-                        #Make the folder
-                        os.makedirs(results_directory)
-                        break
+            if data_list:
+                if tg_list:
+                    tg_answer = messagebox.askquestion("Filter by TextGrid",
+                                                       "Found " + str(len(data_list)) + " ultrasound data packages and " + str(len(tg_list)) + " TextGrids. Filter data packages by TextGrids?",
+                                                       icon='warning')
 
-                # run OF on each item
-                ofdata_file_list = of.compute(data_list, results_directory)
-                exit(0)
-            elif answer is None:
-                exit(0)
-            else:
-                results_directory = filedialog.askdirectory(title="Select results directory...")
-                if results_directory:
+                    # If filtering is requested, then remove data packages from the data_list that have no corresponding base name in the tg_list
+                    if tg_answer:
+                        tg_base_names = []
+                        for tg_file in tg_list:
+                            tg_base_names.append(os.path.splitext(os.path.basename(tg_file))[0])
+
+                        data_list = [b for b in data_list if any(a in b['filebase'] for a in tg_base_names)]
+
+                # Now check if the user really wants to go ahead with the analysis and whether the default results folder is OK
+                proceed_answer = messagebox.askyesnocancel("Proceed with analysis",
+                                       "Found " + str(len(data_list)) + " ultrasound data packages. Proceed with analysis and use default results folder (Yes), choose results folder (No), or cancel?",
+                                       icon='warning')
+                if proceed_answer:
+                    results_directory = os.path.join(data_directory, "results")
+                    while True:
+                        if os.path.exists(results_directory):
+                            if messagebox.askokcancel("Warning", "Use existing results folder?", icon="warning"):
+                                break
+                            else:
+                                exit(0)
+                        else:
+                            #Make the folder
+                            os.makedirs(results_directory)
+                            break
+
                     # run OF on each item
-                    data = of.compute(data_list, results_directory)
+                    ofdata_file_list = of.compute(data_list, results_directory)
                     exit(0)
-                else :
+                elif answer is None:
                     exit(0)
+                else:
+                    results_directory = filedialog.askdirectory(title="Select results directory...")
+                    if results_directory:
+                        # run OF on each item
+                        data = of.compute(data_list, results_directory)
+                        exit(0)
+                    else :
+                        exit(0)
         else:
             answer = messagebox.askretrycancel("File select", "No folder was selected. Try again?")
             if not answer:
